@@ -1,19 +1,32 @@
-import React from "react";
 import { Input } from "./ui/input";
-import { Button } from "./ui/button";
-import { players } from "./players";
 import { Command, CommandGroup, CommandItem } from "./ui/command";
 import Fuse from "fuse.js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-function SearchBar() {
-  const [input, setInput] = useState("");
-  const [open, setOpen] = useState(false);
+type SearchBarProps = {
+  setPlayerName: (value: string) => void;
+  players: string[];
+};
 
+function SearchBar({ setPlayerName, players }: SearchBarProps) {
   const fuse = new Fuse(players, { threshold: 0.3 });
+  const [open, setOpen] = useState(false);
+  const [input, setInput] = useState("");
 
-  const filtered =
-    input.length > 0 ? fuse.search(input).map((r) => r.item) : [];
+  useEffect(() => {
+    if (input === "") {
+      setPlayerName("");
+    }
+  }, [input, setPlayerName]);
+
+  const results = input.length > 0 ? fuse.search(input).map((r) => r.item) : [];
+
+  const handleSelect = (player: string) => {
+    setInput(player);
+    setOpen(false);
+    console.log;
+    setPlayerName(player);
+  };
 
   return (
     <div className="relative w-full max-w-md text-white">
@@ -26,19 +39,13 @@ function SearchBar() {
           setOpen(true);
         }}
         onFocus={() => setOpen(true)}
-        className="rounded-lg"
+        className="rounded-lg hover:scale-105 transition-transform duration-200 ease-in-out"
       />
-      {open && filtered.length > 0 && (
-        <Command className="absolute top-full z-10 w-full bg-white border shadow-md mt-1 rounded-lg">
-          <CommandGroup>
-            {filtered.map((player, index) => (
-              <CommandItem
-                key={index}
-                onSelect={() => {
-                  setInput(player);
-                  setOpen(false);
-                }}
-              >
+      {results.length > 0 && open && (
+        <Command>
+          <CommandGroup className="bg-white rounded-2xl text-black">
+            {results.map((player, index) => (
+              <CommandItem key={index} onSelect={() => handleSelect(player)}>
                 {player}
               </CommandItem>
             ))}
