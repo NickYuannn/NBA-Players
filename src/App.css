@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+.background-gray {
+  @apply bg-gray-600 dark:bg-gray-900;
+}
