@@ -85,7 +85,7 @@ function SearchPage() {
         </>
       )}
 
-      {showStats && <PlayerStats playerName={playerName} />}
+      {playerName && showStats && <PlayerStats playerName={playerName} />}
     </div>
   );
 }
