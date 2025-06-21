@@ -3,12 +3,16 @@ import SearchBar from "../Components/SearchBar.tsx";
 import { useState, useEffect } from "react";
 import { FaBasketball } from "react-icons/fa6";
 import { motion } from "framer-motion";
+import PlayerStats from "@/Components/PlayerStats.tsx";
+import { Button } from "@/Components/ui/button.tsx";
 
 function SearchPage() {
   const [playerName, setPlayerName] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
   const [players, setPlayers] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+
+  const [showStats, setShowStats] = useState(false);
 
   const fetchVideo = async (playerName: string) => {
     setLoading(true);
@@ -42,7 +46,12 @@ function SearchPage() {
         <FaBasketball className="inline-block ml-2 text-orange-500" />
       </h1>
       <div className="flex justify-center w-full">
-        <SearchBar setPlayerName={setPlayerName} players={players} />
+        <SearchBar
+          playerName={playerName}
+          setPlayerName={setPlayerName}
+          players={players}
+          onRefresh={() => fetchVideo(playerName)}
+        />
       </div>
       {playerName && (
         <div className="text-4xl font-[Oswald] mt-3 text-white">{`${playerName}'s Highlights`}</div>
@@ -51,7 +60,6 @@ function SearchPage() {
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-          style={{ display: "inline-block" }}
           className="mt-5"
         >
           <FaBasketball className="text-orange-500" size={48} />
@@ -59,15 +67,25 @@ function SearchPage() {
       )}
 
       {videoUrl && (
-        <iframe
-          src={`${videoUrl}?autoplay=1&mute=1&controls=1&showinfo=0&rel=0&modestbranding=0`}
-          height={500}
-          width={700}
-          allow="autoplay; encrypted-media"
-          className="mt-5 rounded-2xl"
-          allowFullScreen
-        />
+        <>
+          <iframe
+            src={`${videoUrl}?autoplay=1&mute=1&controls=1&showinfo=0&rel=0&modestbranding=0`}
+            height={500}
+            width={700}
+            allow="autoplay; encrypted-media"
+            className="mt-5 rounded-2xl"
+            allowFullScreen
+          />
+          <Button
+            className="h-10 w-25 bg-gray-800 text-sm p-3 mt-2 text-white font-[Oswald]"
+            onClick={() => setShowStats(!showStats)}
+          >
+            Show Player Stats
+          </Button>
+        </>
       )}
+
+      {showStats && <PlayerStats playerName={playerName} />}
     </div>
   );
 }
